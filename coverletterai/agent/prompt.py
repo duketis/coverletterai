@@ -38,7 +38,7 @@ Schema:
   "salutation": "string -- 'Dear <Name>,' if hiring_manager known else 'Dear Hiring Manager,'",
   "opening": "string -- one paragraph (2-3 sentences) introducing the candidate. Concrete hook.",
   "body_paragraphs": [
-    "string -- one paragraph (3-5 sentences) per substantive theme. 1 to 3 paragraphs."
+    "string -- one paragraph (3-5 sentences) per substantive theme. Aim for 2-3, cap at 4."
   ],
   "closing": "string -- one paragraph (2-3 sentences) with a call to action + thanks.",
   "signoff": "string -- 'Sincerely,' or 'Best,' or similar"

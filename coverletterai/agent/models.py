@@ -37,9 +37,10 @@ class TailoredCoverLetter(BaseModel):
       ``"Dear Alex,"`` or ``"Dear Hiring Manager,"``.
     - ``opening`` -- one paragraph: who I am, why this role, why this
       company. Two short sentences ideal.
-    - ``body_paragraphs`` -- 1 to 3 paragraphs of the substantive case.
+    - ``body_paragraphs`` -- 1 to 4 paragraphs of the substantive case.
       Each paragraph anchors on the JD's must-haves and cites the
-      tailored resume's bullets without contradiction.
+      tailored resume's bullets without contradiction. 2-3 is the
+      sweet spot for a one-page letter; 4 is the upper bound.
     - ``closing`` -- one paragraph: call to action + thanks. Short.
     - ``signoff`` -- closing line, eg ``"Sincerely,"`` or ``"Best,"``.
 
@@ -56,6 +57,6 @@ class TailoredCoverLetter(BaseModel):
     hiring_manager: str | None = None
     salutation: str = Field(default="Dear Hiring Manager,", min_length=1)
     opening: str = Field(min_length=1)
-    body_paragraphs: tuple[str, ...] = Field(min_length=1, max_length=3)
+    body_paragraphs: tuple[str, ...] = Field(min_length=1, max_length=4)
     closing: str = Field(min_length=1)
     signoff: str = Field(default="Sincerely,", min_length=1)

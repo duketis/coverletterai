@@ -42,9 +42,9 @@ def test_rejects_zero_body_paragraphs() -> None:
         _letter(body_paragraphs=())
 
 
-def test_rejects_more_than_three_body_paragraphs() -> None:
+def test_rejects_more_than_four_body_paragraphs() -> None:
     with pytest.raises(ValidationError):
-        _letter(body_paragraphs=("a", "b", "c", "d"))
+        _letter(body_paragraphs=("a", "b", "c", "d", "e"))
 
 
 def test_defaults_apply_when_omitted() -> None:
