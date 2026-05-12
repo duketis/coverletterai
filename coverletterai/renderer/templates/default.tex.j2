@@ -1,0 +1,55 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=black,
+}
+
+\pagestyle{empty}
+
+\setlength{\parskip}{0.5em plus 0.1em minus 0.1em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% --- Header: candidate name + contact line -----------------------------------
+{\Large \textbf{<< letter.name >>}}\\[0.2em]
+<< letter.email >>%
+<% if letter.phone %> $\cdot$ << letter.phone >><% endif %>%
+<% if letter.location %> $\cdot$ << letter.location >><% endif %>
+
+\vspace{0.8em}
+
+% --- Date --------------------------------------------------------------------
+<< letter.date >>
+
+\vspace{0.5em}
+
+% --- Recipient block ---------------------------------------------------------
+<% if letter.hiring_manager %><< letter.hiring_manager >>\\<% endif %>%
+<< letter.company >>\\
+Re: << letter.title >>
+
+\vspace{0.8em}
+
+% --- Salutation --------------------------------------------------------------
+<< letter.salutation >>
+
+% --- Body --------------------------------------------------------------------
+<< letter.opening >>
+
+<% for paragraph in letter.body_paragraphs %><< paragraph >>
+
+<% endfor %><< letter.closing >>
+
+\vspace{0.8em}
+
+% --- Signoff -----------------------------------------------------------------
+<< letter.signoff >>\\
+<< letter.name >>
+
+\end{document}
