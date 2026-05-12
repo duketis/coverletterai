@@ -1,0 +1,43 @@
+services:
+  coverletterai:
+    build: .
+    image: coverletterai:local
+    container_name: coverletterai
+    restart: unless-stopped
+    ports:
+      - "8766:8766"
+    env_file:
+      # Holds CLAUDE_CODE_OAUTH_TOKEN -- the long-lived Max-subscription
+      # token generated once via ``claude setup-token`` on the host.
+      # Gitignored.
+      - .env
+    environment:
+      - CLAUDE_CODE_OAUTH_TOKEN=${CLAUDE_CODE_OAUTH_TOKEN}
+      # Root the loader's project-folder scanner against the mounted
+      # host directory below.
+      - COVERLETTERAI_PROJECTS_ROOT=/host/personal
+    volumes:
+      # Per-run rendered outputs on the host. The orchestrator resolves
+      # ``runs/<run_id>/...`` relative to /app inside the container.
+      - ./runs:/app/runs
+      # Reads the SAME UserContext/ tree as resumeai. Bind-mounted from
+      # the resumeai checkout so resume.yaml + work_history + projects
+      # stay in one place.
+      - ../resumeai/UserContext:/app/UserContext:ro
+      # Per-app SQLite database. Separate from resumeai's so each app
+      # owns its data.
+      - ${HOME}/.coverletterai:/root/.coverletterai
+      # The user's personal projects -- read-only mount so the loader's
+      # recursive scanner can pull READMEs, manifests, code stats.
+      - ${HOME}/Documents/personal:/host/personal:ro
+    networks:
+      # On the same default bridge as resumeai so by-ref lookups can hit
+      # ``http://resumeai:8765``. ``docker compose -p shared`` from both
+      # repos is one way; another is an external network. Easiest for
+      # local dev: rely on docker compose project-shared networking.
+      - default
+
+networks:
+  default:
+    name: ai-tailor-network
+    external: false
