@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Type checking / linting caches
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.tox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# coverletterai runtime artifacts (never commit)
+*.db
+*.db-shm
+*.db-wal
+coverletterai.db*
+data/
+logs/
+*.log
+~/.coverletterai/
+
+# Private workspace - interview/decision/architecture material.
+_private/
+
+# UserContext - Jonathan's resume content, JDs, generated outputs.
+UserContext/
+
+# Build / packaging
+*.spec
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Top-level only -- the rendered-PDF output dir. Anchored so the
+# ``coverletterai/runs/`` Python module isn't ignored.
+/runs/
+
+# Session-context anchor - local-only, never committed.
+CLAUDE.md
