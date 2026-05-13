@@ -239,6 +239,26 @@ def test_download_pdf_returns_404_when_file_url_missing_on_disk(
     assert response.status_code == 404
 
 
+def test_download_pdf_serves_file_whose_path_contains_spaces(
+    client: TestClient,
+    runs: InMemoryRunsStore[TailoredCoverLetter],
+    tmp_path: Path,
+) -> None:
+    """Regression: real rendered filenames look like
+    ``"Cover Letter - <Company> - <Title>.pdf"`` -- spaces in the path
+    come back URL-encoded as ``%20`` from ``Path.as_uri()``. The route
+    must decode them before calling ``Path(...).exists()``, otherwise
+    every cover letter 404s despite the file being on disk."""
+    pdf = tmp_path / "Cover Letter - Atlassian - Senior Software Engineer.pdf"
+    pdf.write_bytes(b"%PDF-1.4 fake")
+    runs.save(_make_succeeded_run(run_id="run_spaces", pdf_path=pdf))
+
+    response = client.get("/api/runs/run_spaces/pdf")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    assert response.content == b"%PDF-1.4 fake"
+
+
 # -- create_app defaults ---------------------------------------------------
 
 

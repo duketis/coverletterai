@@ -6,6 +6,7 @@ import asyncio
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from urllib.parse import unquote, urlparse
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
@@ -77,7 +78,12 @@ def download_pdf(
     pdf_url = run.result.doc_url
     if not pdf_url.startswith("file://"):
         raise HTTPException(status_code=502, detail=f"PDF URL is not a local file: {pdf_url!r}")
-    pdf_path = Path(pdf_url.removeprefix("file://"))
+    # ``doc_url`` is a ``Path.as_uri()`` string, so reserved characters in the
+    # filename (notably the spaces in "Cover Letter - <Company> - <Title>.pdf")
+    # come back URL-encoded as ``%20``. ``Path`` doesn't decode them, so we
+    # must, or ``exists()`` falsely returns False and the route 404s with the
+    # file sitting right there on disk.
+    pdf_path = Path(unquote(urlparse(pdf_url).path))
     if not pdf_path.exists():
         raise HTTPException(status_code=404, detail=f"PDF missing on disk for run {run_id!r}")
     return FileResponse(pdf_path, media_type="application/pdf", filename=pdf_path.name)
