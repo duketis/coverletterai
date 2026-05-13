@@ -23,7 +23,7 @@ def _letter(**overrides: object) -> TailoredCoverLetter:
 
 
 def test_round_trips_through_json() -> None:
-    letter = _letter(body_paragraphs=("p1", "p2", "p3"))
+    letter = _letter(body_paragraphs=("p1", "p2"))
     assert TailoredCoverLetter.model_validate_json(letter.model_dump_json()) == letter
 
 
@@ -42,9 +42,12 @@ def test_rejects_zero_body_paragraphs() -> None:
         _letter(body_paragraphs=())
 
 
-def test_rejects_more_than_four_body_paragraphs() -> None:
+def test_rejects_more_than_two_body_paragraphs() -> None:
+    """Three+ body paragraphs guarantees a >1-page render; the schema
+    rejects so the LLM client's retry mechanism kicks in and the model
+    re-emits a tighter letter."""
     with pytest.raises(ValidationError):
-        _letter(body_paragraphs=("a", "b", "c", "d", "e"))
+        _letter(body_paragraphs=("a", "b", "c"))
 
 
 def test_defaults_apply_when_omitted() -> None:

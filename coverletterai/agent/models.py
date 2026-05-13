@@ -37,15 +37,17 @@ class TailoredCoverLetter(BaseModel):
       ``"Dear Alex,"`` or ``"Dear Hiring Manager,"``.
     - ``opening`` -- one paragraph: who I am, why this role, why this
       company. Two short sentences ideal.
-    - ``body_paragraphs`` -- 1 to 4 paragraphs of the substantive case.
+    - ``body_paragraphs`` -- EXACTLY 2 paragraphs of the substantive case.
       Each paragraph anchors on the JD's must-haves and cites the
-      tailored resume's bullets without contradiction. 2-3 is the
-      sweet spot for a one-page letter; 4 is the upper bound.
+      tailored resume's bullets without contradiction. A 1-page letter
+      needs ~300-380 words total -- more than 2 body paragraphs and
+      the render overflows. The Pydantic max_length=2 makes this a
+      hard parse-time rejection so the LLM can't slip a third in.
     - ``closing`` -- one paragraph: call to action + thanks. Short.
     - ``signoff`` -- closing line, eg ``"Sincerely,"`` or ``"Best,"``.
 
-    Single-page LaTeX render: opening + body + closing should fit in
-    ~350-450 words on a standard 1-inch-margin page.
+    Single-page LaTeX render: opening + body + closing fits in
+    ~300-380 words on a standard 1-inch-margin page.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -57,6 +59,6 @@ class TailoredCoverLetter(BaseModel):
     hiring_manager: str | None = None
     salutation: str = Field(default="Dear Hiring Manager,", min_length=1)
     opening: str = Field(min_length=1)
-    body_paragraphs: tuple[str, ...] = Field(min_length=1, max_length=4)
+    body_paragraphs: tuple[str, ...] = Field(min_length=1, max_length=2)
     closing: str = Field(min_length=1)
     signoff: str = Field(default="Sincerely,", min_length=1)

@@ -36,11 +36,11 @@ Schema:
   "title": "string -- the role title (copy from JD)",
   "hiring_manager": "string | null -- include only if the JD names a specific person",
   "salutation": "string -- 'Dear <Name>,' if hiring_manager known else 'Dear Hiring Manager,'",
-  "opening": "string -- one paragraph (2-3 sentences) introducing the candidate. Concrete hook.",
+  "opening": "string -- one paragraph (2 sentences max) introducing the candidate. Concrete hook.",
   "body_paragraphs": [
-    "string -- one paragraph (3-5 sentences) per substantive theme. Aim for 2-3, cap at 4."
+    "string -- one paragraph (3-4 sentences) per substantive theme. EXACTLY 2 entries, never more."
   ],
-  "closing": "string -- one paragraph (2-3 sentences) with a call to action + thanks.",
+  "closing": "string -- one paragraph (2 sentences max) with a call to action + thanks.",
   "signoff": "string -- 'Sincerely,' or 'Best,' or similar"
 }
 
@@ -67,9 +67,12 @@ HARD RULES:
    verbatim). The verifier will fail you if a paragraph reads as generic
    filler.
 
-4. ONE PAGE. The output renders to a 1-inch-margin 11pt LaTeX letter.
-   Total content (opening + body + closing) should fit in 350-450 words.
-   Aim for the lower end if you're uncertain.
+4. ONE PAGE — HARD LIMIT. The output renders to a 1-inch-margin 11pt
+   LaTeX letter. Total content (opening + body + closing) MUST fit in
+   300-380 words. If you're over, drop a body paragraph or shorten
+   sentences. A 2-page letter is automatically rejected and the run
+   re-issues this prompt with the previous overflow attached as
+   context — DO NOT make the verifier come back to you.
 
 5. NO CLICHES. "I am writing to apply" / "I would welcome the
    opportunity" / "passionate about" -- avoid stale openings. Lead with
