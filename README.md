@@ -20,7 +20,7 @@ Given a job description (URL or paste-in) **and** a tailored resume to ground th
 **Pre-1.0, end-to-end pipeline shipping.** `docker compose up -d` brings the FastAPI app up on `:8766` (resumeai is on `:8765`; both run side-by-side via docker-compose with both containers attached to `ai-tailor-network`).
 
 **Headline numbers (2026-05-13):**
-- 84 unit tests locally (the heavy lifting — JD ingest, run orchestration, verifier scaffold, user-context loader — lives in [ai-tailor-core](https://github.com/duketis/ai-tailor-core), which has 348)
+- 135 unit tests locally, 100% line + branch coverage (the heavy lifting — JD ingest, run orchestration, verifier scaffold, user-context loader — lives in [ai-tailor-core](https://github.com/duketis/ai-tailor-core), which has 357)
 - mypy strict, ruff strict, ruff-format clean
 - CI green on every push (ruff + ruff-format + mypy + pytest)
 - Three smoke paths exercised end-to-end against a live SEEK JD: JD-only (`~110s`), by-payload (`~50s`), by-ref against a resumeai run (`~50s`); the by-ref path produces a letter that opens by naming the hiring company and pulls bullets from the just-generated tailored resume rather than from a hardcoded prompt.
