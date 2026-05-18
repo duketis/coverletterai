@@ -19,6 +19,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from tailor_core.verifier.deterministic import find_numeric_contradictions
 from tailor_core.verifier.scaffold import (
     VerifierError,
     check_pdf_length,
@@ -124,12 +125,19 @@ def verify_cover_letter(
     *,
     model: str | None = None,
     pdf_path: Path | None = None,
+    verified_context: str | None = None,
 ) -> VerificationResult:
     """Run the QC pass and return a structured :class:`VerificationResult`.
 
     When ``pdf_path`` is provided we additionally count pages with
     ``pypdf`` and append a programmatic length-check issue if the
     rendered output exceeds :data:`TARGET_MAX_PAGES` (=1).
+
+    When ``verified_context`` is supplied we run the deterministic
+    numeric-claim fact-check and fold any contradiction in as an
+    ``error`` issue -- a belt to the LLM judge's braces, so a fabricated
+    stat that survived both the prompt and the judge still flips the
+    verdict to ``failed`` rather than shipping silently.
     """
     user_prompt = build_verifier_prompt(jd, tailored, tailored_resume)
     result = evaluate_judgement(
@@ -146,7 +154,22 @@ def verify_cover_letter(
         )
         if length_issue is not None:
             result = merge_issue(result, length_issue)
+    for issue in find_numeric_contradictions(_letter_prose(tailored), verified_context):
+        result = merge_issue(result, issue)
     return result
+
+
+def _letter_prose(tailored: TailoredCoverLetter) -> str:
+    """Flatten the letter's prose for the deterministic numeric check."""
+    return "\n".join(
+        (
+            tailored.title,
+            tailored.company,
+            tailored.opening,
+            *tailored.body_paragraphs,
+            tailored.closing,
+        )
+    )
 
 
 def build_verifier_prompt(

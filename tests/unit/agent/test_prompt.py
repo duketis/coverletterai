@@ -172,3 +172,24 @@ def test_build_prompt_handles_missing_dates() -> None:
     )
     prompt = build_cover_letter_prompt(_jd(), None, ctx)
     assert "dates unknown" in prompt
+
+
+_VERIFIED = "VERIFIED jobai stats: 1,126 backend tests at 100% coverage."
+
+
+def test_verified_facts_emitted_before_jd_when_supplied() -> None:
+    prompt = build_cover_letter_prompt(_jd(), None, _context(), verified_context=_VERIFIED)
+    assert "# VERIFIED FACTS" in prompt
+    assert "1,126 backend tests at 100% coverage" in prompt
+    assert "VERBATIM" in prompt
+    # Ground truth must precede the JD so the model anchors on it first.
+    assert prompt.index("# VERIFIED FACTS") < prompt.index("# JOB DESCRIPTION")
+
+
+def test_verified_facts_omitted_when_absent() -> None:
+    assert "# VERIFIED FACTS" not in build_cover_letter_prompt(_jd(), None, _context())
+
+
+def test_verified_facts_omitted_when_blank() -> None:
+    prompt = build_cover_letter_prompt(_jd(), None, _context(), verified_context="   \n ")
+    assert "# VERIFIED FACTS" not in prompt

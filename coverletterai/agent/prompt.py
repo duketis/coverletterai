@@ -105,6 +105,8 @@ def build_cover_letter_prompt(
     tailored_resume: dict[str, object] | None,
     context: UserContext,
     context_files: tuple[ContextFile, ...] = (),
+    *,
+    verified_context: str | None = None,
 ) -> str:
     """Compose the user-prompt for one tailoring call.
 
@@ -113,8 +115,30 @@ def build_cover_letter_prompt(
     so coverletterai doesn't take a hard runtime dep on resumeai. ``None``
     means no resume was supplied; the agent has to work from user context
     alone (less ideal; will produce a more generic letter).
+
+    ``verified_context`` is the caller's ground-truth block (jobai's
+    pinned ``verified`` / ``source:local_project`` pool). When supplied
+    it is emitted FIRST, before the JD, so the model anchors on the
+    real numbers on the first pass rather than only after a downstream
+    QA retry catches a hallucinated stat.
     """
-    sections: list[str] = ["# JOB DESCRIPTION", requirements.model_dump_json(indent=2)]
+    sections: list[str] = []
+    if verified_context and verified_context.strip():
+        sections.extend(
+            [
+                "# VERIFIED FACTS (single source of truth for the candidate's projects and stats)",
+                "Every numeric or factual claim about the candidate's own "
+                "projects MUST use these figures VERBATIM. Do not round, "
+                "estimate, recall, or substitute your own number. If a "
+                "specific number is not stated here, write a qualitative "
+                'phrase ("a comprehensive test suite") rather than '
+                "inventing a figure.",
+                "",
+                verified_context.strip(),
+                "",
+            ]
+        )
+    sections.extend(["# JOB DESCRIPTION", requirements.model_dump_json(indent=2)])
 
     if tailored_resume is not None:
         sections.extend(

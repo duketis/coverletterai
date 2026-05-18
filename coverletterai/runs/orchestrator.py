@@ -55,6 +55,7 @@ class CoverLetterOrchestrator(BaseOrchestrator[TailoredCoverLetter, RuntimeSetti
         super().__init__(**kwargs)  # type: ignore[arg-type]
         self._resumeai_base_url = resumeai_base_url
         self._resolved_resume: dict[str, object] | None = None
+        self._verified_context: str | None = None
 
     def _tailor(
         self,
@@ -72,8 +73,10 @@ class CoverLetterOrchestrator(BaseOrchestrator[TailoredCoverLetter, RuntimeSetti
         except ResumeResolverError as exc:
             raise OrchestratorError(f"could not resolve tailored resume: {exc}") from exc
         # Stash for the later verify hook; ``_verify`` receives only the
-        # ``TailoredCoverLetter`` so we keep the resume on the instance.
+        # ``TailoredCoverLetter`` so we keep the resume + verified-context
+        # on the instance.
         self._resolved_resume = resolved
+        self._verified_context = cl_request.verified_context
         return tailor_cover_letter(
             requirements,
             resolved,
@@ -81,6 +84,7 @@ class CoverLetterOrchestrator(BaseOrchestrator[TailoredCoverLetter, RuntimeSetti
             self._llm,
             model=cl_request.model,
             context_files=context_files,
+            verified_context=cl_request.verified_context,
         )
 
     def _render(
@@ -104,6 +108,7 @@ class CoverLetterOrchestrator(BaseOrchestrator[TailoredCoverLetter, RuntimeSetti
             self._resolved_resume,
             self._llm,
             pdf_path=pdf_path,
+            verified_context=self._verified_context,
         )
 
     def _verify_visually(self, pdf_path: Path) -> VerificationResult | None:

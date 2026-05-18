@@ -128,3 +128,44 @@ def test_verify_cover_letter_forwards_model_override() -> None:
     llm = FakeLLMClient(default_response=_passed_payload())
     verify_cover_letter(_jd(), _letter(), None, llm, model="claude-sonnet-4-6")
     assert llm.calls[0][2] == "claude-sonnet-4-6"
+
+
+_VERIFIED_FACTS = "VERIFIED jobai: 1,126 backend tests at 100% line + branch coverage."
+
+
+def _letter_claiming(body: str) -> TailoredCoverLetter:
+    return TailoredCoverLetter(
+        name="Jane",
+        contact=CoverLetterContact(email="jane@example.com"),
+        company="Acme",
+        title="Senior Engineer",
+        salutation="Dear Hiring Manager,",
+        opening="Hello.",
+        body_paragraphs=(body,),
+        closing="Thanks.",
+        signoff="Sincerely,",
+    )
+
+
+def test_deterministic_contradiction_folds_in_as_error_failure() -> None:
+    llm = FakeLLMClient(default_response=_passed_payload())
+    bad = _letter_claiming("jobai runs 705 tests at 89.5% coverage.")
+    result = verify_cover_letter(_jd(), bad, None, llm, verified_context=_VERIFIED_FACTS)
+    assert result.status is VerificationStatus.FAILED
+    fab = [i for i in result.issues if i.category == "fabricated_metric"]
+    assert fab and all(i.severity is IssueSeverity.ERROR for i in fab)
+
+
+def test_clean_letter_with_verified_context_stays_passed() -> None:
+    llm = FakeLLMClient(default_response=_passed_payload())
+    good = _letter_claiming("jobai has 1,126 backend tests at 100% coverage.")
+    result = verify_cover_letter(_jd(), good, None, llm, verified_context=_VERIFIED_FACTS)
+    assert result.status is VerificationStatus.PASSED
+    assert all(i.category != "fabricated_metric" for i in result.issues)
+
+
+def test_no_verified_context_skips_deterministic_check() -> None:
+    llm = FakeLLMClient(default_response=_passed_payload())
+    bad = _letter_claiming("jobai runs 705 tests at 89.5% coverage.")
+    result = verify_cover_letter(_jd(), bad, None, llm)
+    assert result.status is VerificationStatus.PASSED
