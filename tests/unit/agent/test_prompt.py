@@ -92,6 +92,15 @@ def test_system_prompt_calls_out_grounding_rules() -> None:
     assert "ONE PAGE" in SYSTEM_PROMPT
 
 
+def test_system_prompt_forbids_inventing_project_metrics() -> None:
+    """Regression: jobai run #50 -- the LLM hallucinated '705+ tests at
+    89.5% coverage' about the candidate's own repo. The prompt must
+    explicitly forbid inventing/recalling any quantitative claim."""
+    assert "NEVER INVENT A NUMBER" in SYSTEM_PROMPT
+    assert "VERBATIM" in SYSTEM_PROMPT
+    assert "hallucination" in SYSTEM_PROMPT
+
+
 def test_build_prompt_pairs_jd_with_resume_and_context() -> None:
     tailored_resume: dict[str, object] = {"name": "Jane Doe", "skills": ["Python"]}
     prompt = build_cover_letter_prompt(_jd(), tailored_resume, _context())

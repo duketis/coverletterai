@@ -56,6 +56,17 @@ HARD RULES:
    If the JD asks for something the candidate doesn't have, acknowledge
    transferability honestly rather than claiming the skill directly.
 
+1a. NEVER INVENT A NUMBER — especially about the candidate's own
+   open-source / personal projects. Any quantitative claim (test count,
+   code-coverage %, lines of code, commit count, user/customer count,
+   latency, throughput, revenue, team size, time span) MUST be copied
+   VERBATIM from the TAILORED RESUME or USER CONTEXT. You do not have
+   independent knowledge of these repos; any figure you "remember"
+   (eg "705+ tests at 89.5% coverage") is a hallucination and is a
+   hard rejection. If a metric is not stated in the resume or context,
+   describe the achievement qualitatively with NO number — never
+   estimate, round, recall, or carry a figure over from a prior letter.
+
 2. NEVER CONTRADICT THE TAILORED RESUME. The resume bullets are the
    source of truth for what the candidate did. Don't promote a bullet
    ("led a team of 5") into a stronger claim ("led a team of 15"); don't
